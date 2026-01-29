@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="important-info">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>{{ product.name }}</h2>
+            <a href="{{ url_for('home') }}" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #ffffff; transition: color 0.3s; text-decoration: none;" onmouseover="this.style.color='#ff6b6b'" onmouseout="this.style.color='#ffffff'">✕</a>
+        </div>
+
+        <!-- Product Photos Gallery with Navigation -->
+        <div style="margin-bottom: 20px; position: relative;">
+            <div id="productGallery" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scroll-behavior: smooth;">
+                {% for i in range(5) %}
+                    {% if product.images|length > i %}
+                <div style="flex: 0 0 auto;">
+                    <img src="{{ product.images[i] }}" alt="{{ product.name }}" style="width: 200px; height: 200px; object-fit: cover; border-radius: 8px;">
+                </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <!-- Navigation Arrows -->
+            <button onclick="scrollGallery('left')" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; z-index: 10;">←</button>
+            <button onclick="scrollGallery('right')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; z-index: 10;">→</button>
+        </div>
+
+        <p><strong>Цена:</strong> {{ product.price }}</p>
+        <p><strong>Категория:</strong> {{ product.category }}</p>
+        <p><strong>Размер:</strong> {{ product.size }}</p>
+        <p><strong>Состояние:</strong> {{ product.condition }}</p>
+        <p><strong>Описание:</strong> {{ product.description }}</p>
+
+        <a href="https://t.me/osamo_444" class="btn" style="margin-top: 20px; display: block; text-align: center;" onclick="sendProductMessage('{{ product.name }}')">
+            Написать продавцу
+        </a>
+
+        <p class="small-text" style="text-align: center;">Задать вопрос или купить вещь👆</p>
+    </div>
+
+    <script>
+        // Gallery navigation functions
+        function scrollGallery(direction) {
+            const gallery = document.getElementById('productGallery');
+            if (!gallery) return;
+
+            const scrollAmount = 220; // Width of one image plus gap
+            if (direction === 'left') {
+                gallery.scrollLeft -= scrollAmount;
+            } else if (direction === 'right') {
+                gallery.scrollLeft += scrollAmount;
+            }
+        }
+
+        // Add keyboard navigation support
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                scrollGallery('left');
+            } else if (e.key === 'ArrowRight') {
+                scrollGallery('right');
+            }
+        });
+
+        function sendProductMessage(productName) {
+            // Create the message text
+            const message = encodeURIComponent('Привет! Меня заинтересовал товар: ' + productName);
+
+            // Redirect to Telegram with the pre-filled message
+            window.location.href = 'https://t.me/osamo_444?text=' + message;
+
+            // Prevent default link behavior
+            return false;
+        }
+    </script>
+{% endblock %}

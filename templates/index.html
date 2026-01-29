@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Buttons moved from header to scroll with products -->
+    <div class="header-buttons" style="margin-bottom: 20px;">
+        <a href="#" class="btn btn-secondary" onclick="showChannel()">Канал</a>
+        <a href="#" class="btn btn-secondary" onclick="showReviews()">Отзывы</a>
+        <a href="#" class="btn btn-secondary" onclick="showImportantInfo()">⚠️ Важная информация</a>
+        {% if session.get('admin_logged_in') %}
+            <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary">👤 Админ панель</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-secondary">🔑 Выйти</a>
+        {% else %}
+            <a href="{{ url_for('admin_login') }}" class="btn btn-secondary">👤 Войти</a>
+        {% endif %}
+    </div>
+
+    <div class="filters">
+        <div class="filter-group">
+            <h3>Категория</h3>
+            <select id="categoryFilter" onchange="filterProducts()">
+                <option value="">Все</option>
+                <option value="обувь">Обувь</option>
+                <option value="одежда">Одежда</option>
+                <option value="другое">Другое</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <h3>Размер</h3>
+            <select id="sizeFilter" onchange="filterProducts()">
+                <option value="">Все</option>
+                <!-- Обувь (Европейские размеры) -->
+                <option value="36">36</option>
+                <option value="37">37</option>
+                <option value="38">38</option>
+                <option value="39">39</option>
+                <option value="40">40</option>
+                <option value="41">41</option>
+                <option value="42">42</option>
+                <option value="43">43</option>
+                <option value="44">44</option>
+                <option value="45">45</option>
+                <option value="46">46</option>
+                <!-- Одежда -->
+                <option value="XS">XS</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+                <option value="XXXL">XXXL</option>
+                <!-- Универсальные и другие -->
+                <option value="Универсальный">Универсальный</option>
+                <option value="One Size">One Size</option>
+                <option value="Free Size">Free Size</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <h3>Состояние</h3>
+            <select id="conditionFilter" onchange="filterProducts()">
+                <option value="">Все</option>
+                <option value="Новое">Новое</option>
+                <option value="БУ">БУ</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="products-grid" id="productsGrid">
+        {% for product in products %}
+        <div class="product-card" onclick="window.location.href='/product/{{ product.id }}'">
+            <img src="{{ product.images[0] }}" alt="{{ product.name }}" class="product-image">
+            <div class="product-info">
+                <div class="product-name">{{ product.name }}</div>
+                <div class="product-price">{{ product.price }}</div>
+            </div>
+        </div>
+        {% endfor %}
+        </div>
+    </div>
+
+    <!-- Product Carousel Modal -->
+    <div id="productCarouselModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <span class="close" onclick="closeProductCarousel()">&times;</span>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 id="carouselProductName" style="color: white; font-size: 24px; margin-bottom: 10px;"></h2>
+            </div>
+            <div style="position: relative;">
+                <div id="productCarousel" style="display: flex; overflow: hidden; border-radius: 10px;">
+                    <!-- Images will be inserted here by JavaScript -->
+                </div>
+                <button onclick="previousImage()" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px;">←</button>
+                <button onclick="nextImage()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px;">→</button>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <a id="viewProductDetails" href="#" class="btn" style="display: inline-block;">Посмотреть детали</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carousel variables
+        let currentProductId = null;
+        let currentImages = [];
+        let currentIndex = 0;
+
+        function showProductCarousel(productId, productName, imagesString) {
+            // Parse the images string back to array
+            currentImages = imagesString.split(',');
+            currentProductId = productId;
+            currentIndex = 0;
+
+            // Set product name
+            document.getElementById('carouselProductName').textContent = productName;
+
+            // Set view details link
+            document.getElementById('viewProductDetails').href = '/product/' + productId;
+
+            // Show first image
+            showCurrentImage();
+
+            // Show modal
+            document.getElementById('productCarouselModal').style.display = 'block';
+        }
+
+        function showCurrentImage() {
+            const carousel = document.getElementById('productCarousel');
+            carousel.innerHTML = '';
+
+            // Create image element
+            const img = document.createElement('img');
+            img.src = currentImages[currentIndex];
+            img.style.width = '100%';
+            img.style.height = '400px';
+            img.style.objectFit = 'contain';
+            img.style.borderRadius = '10px';
+
+            carousel.appendChild(img);
+        }
+
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % currentImages.length;
+            showCurrentImage();
+        }
+
+        function previousImage() {
+            currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+            showCurrentImage();
+        }
+
+        function closeProductCarousel() {
+            document.getElementById('productCarouselModal').style.display = 'none';
+        }
+
+        function filterProducts() {
+            const category = document.getElementById('categoryFilter').value;
+            const size = document.getElementById('sizeFilter').value;
+            const condition = document.getElementById('conditionFilter').value;
+
+            fetch('/filter_products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    category: category,
+                    size: size,
+                    condition: condition
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const productsGrid = document.getElementById('productsGrid');
+                productsGrid.innerHTML = '';
+
+                data.products.forEach(product => {
+                    const productCard = `
+                        <div class="product-card" onclick="window.location.href='/product/${product.id}'">
+                            <img src="${product.images[0]}" alt="${product.name}" class="product-image">
+                            <div class="product-info">
+                                <div class="product-name">${product.name}</div>
+                                <div class="product-price">${product.price}</div>
+                            </div>
+                        </div>
+                    `;
+                    productsGrid.innerHTML += productCard;
+                });
+            })
+            .catch(error => {
+                console.error('Error filtering products:', error);
+            });
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('productCarouselModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+{% endblock %}

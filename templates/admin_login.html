@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="admin-panel">
+        <h2 style="margin-bottom: 20px; text-align: center;">Вход в админ панель</h2>
+        <form action="{{ url_for('admin_auth') }}" method="POST">
+            <div class="form-group">
+                <label for="username">Имя пользователя:</label>
+                <input type="text" id="username" name="username" value="osamo_444" required placeholder="Введите имя пользователя">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" name="password" required placeholder="Введите пароль">
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button type="submit" class="btn" style="flex: 1; padding: 12px;">Войти</button>
+                <a href="{{ url_for('home') }}" class="btn btn-secondary" style="flex: 1; padding: 12px;">Отмена</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="admin-panel">
+        <h2>Редактировать товар</h2>
+
+        <form action="{{ url_for('edit_product', product_id=product.id) }}" method="POST">
+            <div class="form-group">
+                <label for="name">Название:</label>
+                <input type="text" id="name" name="name" value="{{ product.name }}" required placeholder="Введите название товара" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="category">Категория:</label>
+                <select id="category" name="category" required>
+                    <option value="обувь" {% if product.category == 'обувь' %}selected{% endif %}>Обувь</option>
+                    <option value="одежда" {% if product.category == 'одежда' %}selected{% endif %}>Одежда</option>
+                    <option value="другое" {% if product.category == 'другое' %}selected{% endif %}>Другое</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="condition">Состояние:</label>
+                <select id="condition" name="condition" required>
+                    <option value="Новое" {% if product.condition == 'Новое' %}selected{% endif %}>Новое</option>
+                    <option value="БУ" {% if product.condition == 'БУ' %}selected{% endif %}>БУ</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="size">Размер:</label>
+                <input type="text" id="size" name="size" value="{{ product.size }}" required placeholder="Введите размер (например: 42, L, M)" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="price">Цена:</label>
+                <input type="text" id="price" name="price" value="{{ product.price }}" required placeholder="Введите цену (например: 5000 ₽)" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Описание:</label>
+                <textarea id="description" name="description" rows="5" required placeholder="Введите подробное описание товара" autocomplete="off">{{ product.description }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="image1">Ссылка на изображение 1:</label>
+                <input type="text" id="image1" name="image1" value="{{ product.images[0] if product.images|length > 0 else '' }}" required placeholder="https://example.com/image1.jpg" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="image2">Ссылка на изображение 2:</label>
+                <input type="text" id="image2" name="image2" value="{{ product.images[1] if product.images|length > 1 else '' }}" placeholder="https://example.com/image2.jpg" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="image3">Ссылка на изображение 3:</label>
+                <input type="text" id="image3" name="image3" value="{{ product.images[2] if product.images|length > 2 else '' }}" placeholder="https://example.com/image3.jpg" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="image4">Ссылка на изображение 4:</label>
+                <input type="text" id="image4" name="image4" value="{{ product.images[3] if product.images|length > 3 else '' }}" placeholder="https://example.com/image4.jpg" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="image5">Ссылка на изображение 5:</label>
+                <input type="text" id="image5" name="image5" value="{{ product.images[4] if product.images|length > 4 else '' }}" placeholder="https://example.com/image5.jpg" autocomplete="off">
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn">Сохранить изменения</button>
+                <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
